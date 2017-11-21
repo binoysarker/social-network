@@ -12,6 +12,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('css/noty.css')}}">
 </head>
 <body>
     <div id="app">
@@ -80,5 +81,15 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{asset('js/noty.js')}}"></script>
+    <script >
+        @if(Session::has('success'))
+            new Noty({
+                type: 'success',
+                layout: 'topRight',
+                text: "{{session()->get('success')}}",
+            }).show();
+        @endif
+    </script>
 </body>
 </html>

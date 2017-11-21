@@ -72,13 +72,12 @@ class profilesController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $this->validate($request,[
             'location' => 'required|max:55',
             'about'    =>  'required|max:255',
-            'avater'    =>  'required|file',
         ]);
         $profile = Profile::findOrFail($id);
+
         if ($request->hasFile('avater')){
             $profile->user->update([
                 'avater' => $request->avater->store('public/users/avaters/')

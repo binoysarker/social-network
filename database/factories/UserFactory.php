@@ -15,9 +15,12 @@ use Faker\Generator as Faker;
 
 $factory->define(App\User::class, function (Faker $faker) {
     static $password;
-
+    $rndNum = rand(0,1);
     return [
         'name' => $faker->name,
+        'slug' => str_slug($faker->name),
+        'gender' => rand(0,1),
+        'avater' => $rndNum == 0 ?'public/defaults/avaters/female.png':'public/defaults/avaters/male.png',
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),

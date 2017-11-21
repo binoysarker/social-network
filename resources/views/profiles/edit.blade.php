@@ -10,6 +10,14 @@
                 @if(session()->has('success'))
                     <h1 class="alert alert-success">{{session()->get('success')}}</h1>
                 @endif
+                {{--error message--}}
+                @if($errors->any())
+                    @foreach($errors->all() as $error)
+                        <ul>
+                            <li class="alert alert-danger">{{$error}}</li>
+                        </ul>
+                    @endforeach
+                @endif
                 @foreach($users as $user)
                 <form action="{{url('/profile/'.$user->user->id)}}" method="post" enctype="multipart/form-data">
                     {{csrf_field()}}
