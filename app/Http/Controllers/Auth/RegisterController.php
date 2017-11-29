@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Profile;
-use App\User;
+use App\Models\Profile;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -65,10 +65,13 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         if ($data['gender']){
-            $avater = 'public/defaults/avaters/male.png';
+            $avatar = 'public/defaults/avatars/male.png';
+        }
+        if ($data['cover_photo']){
+            $cover_photo = 'public/defaults/avatars/cover.jpg';
         }
         else{
-            $avater = 'public/defaults/avaters/female.png';
+            $avatar = 'public/defaults/avatars/female.png';
         }
         $user = User::create([
             'name' => $data['name'],
@@ -76,10 +79,12 @@ class RegisterController extends Controller
             'gender' => $data['gender'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'avater' => $avater,
+            'avatar' => $avatar,
+            'cover_photo' => $cover_photo,
         ]);
 
         Profile::create(['user_id' => $user->id]);
+        
         return $user;
     }
 }

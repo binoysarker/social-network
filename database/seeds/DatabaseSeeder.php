@@ -11,6 +11,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        /*factory(\App\Models\Profile::class,6)->create();
+        factory(\App\Models\WorkProfile::class,6)->create();
+        factory(\App\Models\EducationProfile::class,6)->create();*/
+	    
+        factory(App\User::class, 6)
+			    ->create()
+			    ->each(function ($u) {
+				    $u->profile()->save(factory(\App\Models\Profile::class)->make());
+				    $u->workProfile()->save(factory(\App\Models\WorkProfile::class)->make());
+				    $u->educationProfile()->save(factory(\App\Models\EducationProfile::class)->make());
+			    });
     }
 }

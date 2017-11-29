@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Profile;
+use App\Models\Profile;
 use App\User;
 use Illuminate\Http\Request;
 
 class profilesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,8 @@ class profilesController extends Controller
      */
     public function index()
     {
-
+        $users = User::paginate(4);
+        return view('profiles.home',compact('users'));
     }
 
     /**
@@ -57,10 +63,11 @@ class profilesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Profile $profile)
+    public function edit($id)
     {
-        $users = $profile->with('user')->get();
-        return view('profiles.edit',compact('users'));
+
+        $profile = Profile::where('user_id',$id)->with('user')->first();
+        return view('profiles.edit',compact('profile'));
     }
 
     /**
@@ -74,21 +81,36 @@ class profilesController extends Controller
     {
         $this->validate($request,[
             'location' => 'required|max:55',
-            'about'    =>  'required|max:255',
+            'about'    =>  'required|max:1024',
+	          'avatar'   =>   'file|image|max:30|min:10',
+	          'cover_photo'   =>   'file|image|max:200|min:110',
         ]);
-        $profile = Profile::findOrFail($id);
+        $profile = Profile::where('user_id',$id)->with('user')->first();
+	
+	    if($request->hasFile('cover_photo')){
+		    
+		    $profile->user->update([
+		    		'cover_photo'   => $request->file('cover_photo')->store('public/users/avatars/')
+		    ]);
+	    }
+	    if ($request->hasFile('avatar')){
+		    
+		    $profile->user->update([
+		    		'avatar'    => $request->file('avatar')->store('public/users/avatars/')
+		    ]);
+	    }
+	    
+	    $profile->update([
+	    		'location' => $request->location,
+	    		'about' => $request->about,
+	    ]);
+     
+	    $notification = array(
+            'message' => 'Profile Updated!',
+            'alert-type' => 'success'
+        );
 
-        if ($request->hasFile('avater')){
-            $profile->user->update([
-                'avater' => $request->avater->store('public/users/avaters/')
-            ]);
-        }
-        $profile->update([
-            'location' => $request->location,
-            'about' => $request->about,
-        ]);
-        session()->flash('success','Profile Updated');
-        return redirect()->back();
+        return redirect()->back()->with($notification);
 
 
     }

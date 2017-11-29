@@ -7,10 +7,25 @@ use Illuminate\Http\Request;
 
 class FriendshipController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /*
+     *to search all the users from the users table
+     */
+    public function searchAll($slug)
+    {
+        $user = User::where('name','like','%'.$slug.'%')->get();
+        return $user;
+    }
+
     /*
      *This section is only for controlling the friendship
      * with single specific functions
      */
+
 
     public function add_friend($requester,$user_requested)
     {
@@ -19,6 +34,10 @@ class FriendshipController extends Controller
     public function accept_friend($requester,$user_requested)
     {
         return User::find($requester)->accept_friend($user_requested);
+    }
+    public function remove_friend($requester,$user_requested)
+    {
+        return User::find($requester)->remove_friend($user_requested);
     }
     public function all_friends($requester)
     {
@@ -36,9 +55,13 @@ class FriendshipController extends Controller
     {
         return User::find($requester)->is_friends_with($friend_id);
     }
-    public function has_pending_request($requester,$friend_id)
+    public function has_pending_request($requester)
     {
-        return User::find($requester)->has_pending_request($friend_id);
+        return User::find($requester)->has_pending_request();
+    }
+    public function has_pending_request_sent($requester)
+    {
+        return User::find($requester)->has_pending_request_sent();
     }
     public function has_pending_friend_request_from($requester,$friend_id)
     {
